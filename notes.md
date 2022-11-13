@@ -9,3 +9,16 @@ php artisan vendor:publish --provider="PHPOpenSourceSaver\JWTAuth\Providers\Lara
 
 php artisan jwt:secret
 
+# Migrate
+
+php artisan migrate
+
+# Integrate JWT
+
+Add methods to User;
+
+Modify config/auth.php
+
+Add routes to auth;
+
+php artisan make:controller AuthController
