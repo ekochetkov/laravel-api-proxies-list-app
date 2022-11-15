@@ -12,14 +12,31 @@ class AuthTest extends TestCase
     use RefreshDatabase;
 
     /**
+     * Get token for test api endpoints
+     * return valid authorized JWT-token
+     *
+     * @return String
+     */
+    public static function get_authorized_jwt_token($testCaseObj)
+    {
+        $user = User::factory()->create();
+
+        $post_args = ['email'    => $user->email,
+                      'password' => 'password'];
+    
+        return $testCaseObj->post('/api/auth/login', $post_args)
+                           ->json(['access_token']);
+    }
+        
+    /**
      * Test unauthorized
      *
      * @return void
      */
     public function test_unauthorized()
     {
-        $response = $this->getJson('/api/auth/status');
-        $response->assertStatus(401);
+        $this->getJson('/api/auth/status')
+              ->assertStatus(401);
     }
     
     /**
@@ -69,14 +86,8 @@ class AuthTest extends TestCase
      * @return void
      */
     public function test_status()
-    {
-        $user = User::factory()->create();
-
-        $post_args = ['email'    => $user->email,
-                      'password' => 'password'];
-    
-        $token = $this->post('/api/auth/login', $post_args)
-                      ->json(['access_token']);
+    {    
+        $token = $this::get_authorized_jwt_token($this);
         
         $this->withHeader('Authorization',"Bearer {$token}")
              ->getJson('/api/auth/status')
@@ -91,13 +102,7 @@ class AuthTest extends TestCase
      */
     public function test_logout()
     {
-        $user = User::factory()->create();
-
-        $post_args = ['email'    => $user->email,
-                      'password' => 'password'];
-    
-        $token = $this->post('/api/auth/login', $post_args)
-                      ->json(['access_token']);
+        $token = $this::get_authorized_jwt_token($this);
         
         $this->withHeader('Authorization',"Bearer {$token}")
              ->getJson('/api/auth/status')
@@ -120,26 +125,16 @@ class AuthTest extends TestCase
      */
     public function test_refresh_token()
     {
-        $user = User::factory()->create();
-
-        $post_args = ['email'    => $user->email,
-                      'password' => 'password'];
-    
-        $response = $this->post('/api/auth/login', $post_args);
-
-        $token = $response->json(['access_token']);
+        $token = $this::get_authorized_jwt_token($this);
         
         $response_refresh = $this->withHeader('Authorization',"Bearer {$token}")
                                 ->post('/api/auth/refresh');
 
-        
         $response_refresh
         ->assertStatus(200)
         ->assertJsonStructure([
             'access_token', 'token_type', 'expires_in'
-        ]);
-        
-        
+        ]);        
     }
     
 }

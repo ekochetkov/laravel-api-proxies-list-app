@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\User;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -52,13 +52,13 @@ class AuthController extends Controller
     }
 
     /**
-     * Get the authenticated User.
+     * Check user auth status
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function me()
+    public function status()
     {
-        return response()->json(auth()->user());
+        return response()->json(['status' => 'Authorized']);
     }
 
     /**
