@@ -14,5 +14,6 @@ Route::group(['prefix' => 'auth'], function () {
   });
 
 Route::group(['prefix' => 'proxies'], function () {
-    Route::get('list', [ProxiesController::class, 'list']);
+    Route::get('list',   [ProxiesController::class, 'list']);
+    Route::get('export', [ProxiesController::class, 'export']);
   });
